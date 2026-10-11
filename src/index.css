@@ -1,0 +1,188 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Palette follows the Mazlum admin panel: a neutral (gray) scale, Manrope,
+ * a dark primary and a bordered, rounded content surface.
+ *
+ * shadcn/ui tokens (--background, --primary, --border, …) and Keyra's own
+ * semantic tokens (--canvas, --surface, --fg-*, …) are defined from the same
+ * neutral scale so both families of classes always agree.
+ */
+:root {
+  color-scheme: light;
+  --app-font: "Manrope Variable";
+  --radius: 0.5rem;
+
+  /* Keyra tokens */
+  --canvas: var(--color-neutral-50);
+  --surface: #ffffff;
+  --subtle: var(--color-neutral-100);
+  --hover: color-mix(in oklab, var(--color-neutral-200) 50%, transparent);
+  --line: var(--color-neutral-200);
+  --line-strong: color-mix(in oklab, var(--color-neutral-300) 70%, transparent);
+  --fg: var(--color-neutral-900);
+  --fg-2: var(--color-neutral-600);
+  --fg-3: var(--color-neutral-500);
+  --fg-4: var(--color-neutral-400);
+  --primary-hover: var(--color-neutral-700);
+  --bar: var(--color-neutral-800);
+  /* Two-series comparison charts (validated for CVD separation and 3:1 contrast). */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+
+  /* shadcn tokens */
+  --background: var(--surface);
+  --foreground: var(--fg);
+  --card: var(--surface);
+  --card-foreground: var(--fg);
+  --popover: var(--surface);
+  --popover-foreground: var(--fg);
+  --primary: var(--color-neutral-900);
+  --primary-foreground: var(--color-neutral-50);
+  --secondary: var(--color-neutral-100);
+  --secondary-foreground: var(--color-neutral-900);
+  --muted: var(--color-neutral-100);
+  --muted-foreground: var(--color-neutral-500);
+  --accent: var(--color-neutral-100);
+  --accent-foreground: var(--color-neutral-900);
+  --destructive: var(--color-red-600);
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--color-neutral-400);
+}
+
+/* Font picked in Settings → Appearance (set as data-font on <html>). */
+[data-font="inter"] { --app-font: "Inter Variable"; }
+[data-font="montserrat"] { --app-font: "Montserrat Variable"; }
+[data-font="jakarta"] { --app-font: "Plus Jakarta Sans Variable"; }
+[data-font="dmsans"] { --app-font: "DM Sans Variable"; }
+
+.dark {
+  color-scheme: dark;
+
+  --canvas: var(--color-neutral-950);
+  --surface: #0d0d0d;
+  --subtle: var(--color-neutral-800);
+  --hover: color-mix(in oklab, #ffffff 7%, transparent);
+  --line: #1f1f1f;
+  --line-strong: var(--color-neutral-800);
+  --fg: var(--color-neutral-50);
+  --fg-2: var(--color-neutral-300);
+  --fg-3: var(--color-neutral-400);
+  --fg-4: var(--color-neutral-500);
+  --primary-hover: var(--color-neutral-200);
+  --bar: var(--color-neutral-300);
+  --series-1: #3987e5;
+  --series-2: #d95926;
+
+  --primary: var(--color-neutral-50);
+  --primary-foreground: var(--color-neutral-900);
+  --secondary: var(--color-neutral-800);
+  --secondary-foreground: var(--color-neutral-50);
+  --muted: var(--color-neutral-800);
+  --muted-foreground: var(--color-neutral-400);
+  --accent: var(--color-neutral-800);
+  --accent-foreground: var(--color-neutral-50);
+  --destructive: var(--color-red-400);
+  --ring: var(--color-neutral-500);
+}
+
+@theme inline {
+  --font-sans: var(--app-font), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-sans);
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-hover: var(--hover);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-fg-4: var(--fg-4);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-foreground);
+  --color-bar: var(--bar);
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    background-color: var(--canvas);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  input,
+  textarea,
+  .selectable {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--fg-4);
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.animate-pop-in { animation: pop-in 0.18s cubic-bezier(0.2, 0.8, 0.2, 1); }
