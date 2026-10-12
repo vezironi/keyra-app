@@ -18,6 +18,7 @@ pub fn run() {
             }
         }))
         .plugin(shell::shortcut_plugin())
+        .plugin(shell::autostart_plugin())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_notification::init())

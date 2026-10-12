@@ -34,7 +34,7 @@ export function emptyVault(): VaultData {
       autoBackupDir: "",
       autoBackupKeep: 10,
       autoRates: false,
-      closeToTray: false,
+      closeToTray: true,
       globalShortcut: "CommandOrControl+Shift+Space",
       browserIntegration: false,
     },

@@ -324,10 +324,38 @@ function HelloRow() {
 const SHORTCUTS = ["CommandOrControl+Shift+Space", "CommandOrControl+Alt+Space", "CommandOrControl+Alt+K", "CommandOrControl+Shift+K"];
 const shortcutLabel = (accel: string) => accel.replace("CommandOrControl", "Ctrl").split("+").join(" + ");
 
+function AutostartRow() {
+  const { toast } = useVault();
+  const [enabled, setEnabled] = useState<boolean | null>(null);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    api.autostartStatus().then(setEnabled).catch(() => setEnabled(false));
+  }, []);
+
+  const toggle = async (on: boolean) => {
+    setBusy(true);
+    try {
+      await api.autostartSet(on);
+      setEnabled(on);
+    } catch (e) {
+      toast(errorMessage(e), "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Row label={t("settings.desktop.autostart")} description={t("settings.desktop.autostartDesc")}>
+      {enabled === null ? <Loader2 size={16} className="animate-spin text-fg-3" /> : <Switch checked={enabled} disabled={busy} onCheckedChange={toggle} />}
+    </Row>
+  );
+}
+
 function DesktopSection({ draft: { settings: s }, set }: SectionProps) {
   if (!isTauri) return <p className="text-xs font-medium text-fg-3 pt-4">{t("errors.desktop_only")}</p>;
   return (
     <>
+      <AutostartRow />
       <Row label={t("settings.desktop.tray")} description={t("settings.desktop.trayDesc")}>
         <Switch checked={s.closeToTray} onCheckedChange={(closeToTray) => set({ closeToTray })} />
       </Row>

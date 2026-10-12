@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { disable as autostartDisable, enable as autostartEnable, isEnabled as autostartEnabled } from "@tauri-apps/plugin-autostart";
 import { t, tDynamic } from "@/i18n";
 import { DEMO_PASSWORD, DEMO_STORAGE_KEY, demoVault, isDemo } from "./demo";
 
@@ -152,6 +153,14 @@ export const api = {
   /** Tray, close-to-tray and global shortcut preferences. */
   shellConfigure: async (config: ShellConfig): Promise<void> => {
     if (isTauri) return invoke("shell_configure", { config });
+  },
+
+  /** Whether Keyra starts (hidden, in the tray) when the user logs in. Kept by the OS, not the vault. */
+  autostartStatus: async (): Promise<boolean> => (isTauri ? autostartEnabled() : false),
+
+  autostartSet: async (on: boolean): Promise<void> => {
+    if (!isTauri) throw "desktop_only";
+    return on ? autostartEnable() : autostartDisable();
   },
 
   /** Types the steps into the previously active window. */

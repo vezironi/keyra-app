@@ -51,7 +51,7 @@ interface Prefs {
 }
 
 const PREFS_KEY = "keyra-prefs";
-const DEFAULT_PREFS: Prefs = { theme: "system", language: "system", font: "manrope", closeToTray: false, globalShortcut: "CommandOrControl+Shift+Space", browserIntegration: false, testAccount: false };
+const DEFAULT_PREFS: Prefs = { theme: "system", language: "system", font: "manrope", closeToTray: true, globalShortcut: "CommandOrControl+Shift+Space", browserIntegration: false, testAccount: false };
 
 function loadPrefs(): Prefs {
   try {

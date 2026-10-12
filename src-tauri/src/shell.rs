@@ -1,5 +1,5 @@
-//! Desktop integration: tray icon, close-to-tray, the global quick-search
-//! shortcut and auto-type.
+//! Desktop integration: tray icon, close-to-tray, launch at login, the global
+//! quick-search shortcut and auto-type.
 //!
 //! Preferences live in the encrypted vault, so the frontend pushes them here with
 //! `shell_configure` (also before unlock, from its local mirror).
@@ -12,18 +12,29 @@ use serde::Deserialize;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Emitter, Manager, Runtime, State, WebviewWindow, WindowEvent};
+use tauri_plugin_autostart::ManagerExt;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
 const TRAY_ID: &str = "main";
 pub const EVENT_QUICK_SEARCH: &str = "shell://quick-search";
 pub const EVENT_LOCK: &str = "shell://lock";
+/// Passed by the login item so Keyra starts quietly in the tray.
+pub const AUTOSTART_ARG: &str = "--autostart";
+/// Written once launch at login has been turned on by default, so turning it off sticks.
+const AUTOSTART_MARKER: &str = "autostart-initialized";
 
-#[derive(Default)]
 pub struct ShellState {
     close_to_tray: AtomicBool,
     shortcut: Mutex<Option<Shortcut>>,
     /// Window that was in front when the global shortcut fired; auto-type returns to it.
     previous_window: AtomicIsize,
+}
+
+impl Default for ShellState {
+    fn default() -> Self {
+        // The browser extension needs Keyra running, so closing the window keeps it in the tray by default.
+        Self { close_to_tray: AtomicBool::new(true), shortcut: Mutex::default(), previous_window: AtomicIsize::default() }
+    }
 }
 
 #[derive(Deserialize)]
@@ -91,9 +102,35 @@ pub fn shortcut_plugin<R: Runtime>() -> tauri::plugin::TauriPlugin<R> {
         .build()
 }
 
-/// Creates the tray icon. Called from the app's setup hook.
+pub fn autostart_plugin<R: Runtime>() -> tauri::plugin::TauriPlugin<R> {
+    tauri_plugin_autostart::Builder::new().arg(AUTOSTART_ARG).build()
+}
+
+/// Turns launch at login on the first time Keyra runs; after that the user's choice is kept.
+/// Skipped in debug builds so the dev binary never ends up in the login items.
+fn enable_autostart_once<R: Runtime>(app: &AppHandle<R>) {
+    if cfg!(debug_assertions) {
+        return;
+    }
+    let Ok(dir) = app.path().app_config_dir() else { return };
+    let marker = dir.join(AUTOSTART_MARKER);
+    if marker.exists() {
+        return;
+    }
+    if app.autolaunch().enable().is_ok() {
+        let _ = std::fs::create_dir_all(&dir);
+        let _ = std::fs::write(marker, b"");
+    }
+}
+
+/// Creates the tray icon and shows the window, unless Keyra was started at login.
+/// Called from the app's setup hook.
 pub fn setup<R: Runtime>(app: &tauri::App<R>) -> tauri::Result<()> {
     let handle = app.handle();
+    enable_autostart_once(handle);
+    if !std::env::args().any(|a| a == AUTOSTART_ARG) {
+        show_main(handle);
+    }
     let mut tray = TrayIconBuilder::with_id(TRAY_ID)
         .tooltip("Keyra")
         .menu(&menu(handle, &Labels::default())?)

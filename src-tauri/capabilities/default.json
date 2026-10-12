@@ -10,6 +10,7 @@
     "clipboard-manager:allow-clear",
     "notification:default",
     "dialog:allow-save",
-    "dialog:allow-open"
+    "dialog:allow-open",
+    "autostart:default"
   ]
 }
