@@ -19,22 +19,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build Windows installer
-        run: npm run tauri build -- --bundles nsis
+        run: pnpm tauri build --bundles nsis
 
-      - name: Upload EXE
+      - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
           name: windows-exe
@@ -58,24 +63,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
+      - name: Install macOS dependencies
+        run: |
+          brew install create-dmg
+          xcode-select -p
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build macOS installer
-        run: npm run tauri build -- --target ${{ matrix.target }} --bundles dmg
+        run: pnpm tauri build --target ${{ matrix.target }} --bundles dmg
 
-      - name: Upload DMG
+      - name: Upload macOS installer
         uses: actions/upload-artifact@v4
         with:
           name: macos-dmg-${{ matrix.arch }}
