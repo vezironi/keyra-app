@@ -8,6 +8,8 @@ import { api, errorMessage, isTauri, BROWSER_PORT, type BrowserClient } from "@/
 import { migrate } from "@/lib/defaults";
 import { mergeImport, parseExport, type ImportSource, type ParsedImport } from "@/lib/importers";
 import { writeAutoBackup } from "@/lib/backup";
+import { findUpdate, promptUpdate } from "@/lib/updater";
+import { getVersion } from "@tauri-apps/api/app";
 import { fetchRates } from "@/lib/rates";
 import { reconcile } from "@/lib/subscriptions";
 import { cn, formatDate, relativeTime, todayKey, type DateFormat } from "@/lib/format";
@@ -351,10 +353,44 @@ function AutostartRow() {
   );
 }
 
+function UpdateRow() {
+  const { toast } = useVault();
+  const [version, setVersion] = useState("");
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    getVersion().then(setVersion).catch(() => {});
+  }, []);
+
+  const checkNow = async () => {
+    setBusy(true);
+    try {
+      const update = await findUpdate();
+      if (update) await promptUpdate(update);
+      else toast(t("update.upToDate"), "success");
+    } catch (e) {
+      toast(t("update.checkFailed", { error: errorMessage(e) }), "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Row label={t("settings.desktop.version")} description={t("settings.desktop.versionDesc", { version })}>
+      <Button icon={busy ? Loader2 : RefreshCw} disabled={busy} onClick={checkNow}>
+        {t("settings.desktop.checkUpdates")}
+      </Button>
+    </Row>
+  );
+}
+
 function DesktopSection({ draft: { settings: s }, set }: SectionProps) {
   if (!isTauri) return <p className="text-xs font-medium text-fg-3 pt-4">{t("errors.desktop_only")}</p>;
   return (
     <>
+      <UpdateRow />
+      <Row label={t("settings.desktop.autoUpdate")} description={t("settings.desktop.autoUpdateDesc")}>
+        <Switch checked={s.autoUpdate} onCheckedChange={(autoUpdate) => set({ autoUpdate })} />
+      </Row>
       <AutostartRow />
       <Row label={t("settings.desktop.tray")} description={t("settings.desktop.trayDesc")}>
         <Switch checked={s.closeToTray} onCheckedChange={(closeToTray) => set({ closeToTray })} />

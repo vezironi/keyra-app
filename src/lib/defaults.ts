@@ -37,6 +37,7 @@ export function emptyVault(): VaultData {
       closeToTray: true,
       globalShortcut: "CommandOrControl+Shift+Space",
       browserIntegration: false,
+      autoUpdate: true,
     },
   };
 }

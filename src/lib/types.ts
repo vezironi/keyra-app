@@ -153,6 +153,8 @@ export interface Settings {
   globalShortcut: string;
   /** Serve the Keyra browser extension on 127.0.0.1. */
   browserIntegration: boolean;
+  /** Install updates on launch; when off, Keyra asks first. */
+  autoUpdate: boolean;
 }
 
 /** Result of the last breach check of one login (Have I Been Pwned). */

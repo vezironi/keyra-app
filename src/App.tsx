@@ -9,6 +9,7 @@ import { backupDue, writeAutoBackup } from "./lib/backup";
 import { expiredTrash, purge } from "./lib/trash";
 import { fetchRates, ratesDue } from "./lib/rates";
 import { migrate } from "./lib/defaults";
+import { applyUpdate, findUpdate, promptUpdate, updatesSupported } from "./lib/updater";
 import { VaultProvider, useVault, type Toast } from "./lib/store";
 import { DEMO_PASSWORD, isDemo } from "./lib/demo";
 import { daysUntilNext, isBilling, reconcile } from "./lib/subscriptions";
@@ -46,12 +47,14 @@ interface Prefs {
   closeToTray: boolean;
   globalShortcut: string;
   browserIntegration: boolean;
+  /** Install updates on launch instead of asking. Checked before unlock. */
+  autoUpdate: boolean;
   /** The vault is the test account, so the lock screen can offer its password. */
   testAccount: boolean;
 }
 
 const PREFS_KEY = "keyra-prefs";
-const DEFAULT_PREFS: Prefs = { theme: "system", language: "system", font: "manrope", closeToTray: true, globalShortcut: "CommandOrControl+Shift+Space", browserIntegration: false, testAccount: false };
+const DEFAULT_PREFS: Prefs = { theme: "system", language: "system", font: "manrope", closeToTray: true, globalShortcut: "CommandOrControl+Shift+Space", browserIntegration: false, autoUpdate: true, testAccount: false };
 
 function loadPrefs(): Prefs {
   try {
@@ -115,6 +118,28 @@ export default function App() {
   useEffect(() => {
     api.browserConfigure(prefs.browserIntegration).catch((e) => toast(errorMessage(e), "error"));
   }, [prefs.browserIntegration, toast]);
+
+  // Runs before unlock, so it follows the mirror. Auto mode installs only at launch;
+  // releases found while the app is running are always offered, never forced.
+  const autoUpdate = useRef(prefs.autoUpdate);
+  autoUpdate.current = prefs.autoUpdate;
+  useEffect(() => {
+    if (!updatesSupported) return;
+    let atLaunch = true;
+    const run = async () => {
+      try {
+        const update = await findUpdate();
+        if (update) await (atLaunch && autoUpdate.current ? applyUpdate(update) : promptUpdate(update));
+      } catch {
+        /* offline, or no signed release published yet */
+      } finally {
+        atLaunch = false;
+      }
+    };
+    run();
+    const timer = window.setInterval(run, 6 * 60 * 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     api
@@ -182,13 +207,13 @@ function Shell({ searchOpen, setSearchOpen, onPrefsChange }: { searchOpen: boole
   const { autoBackupDays, autoBackupDir, autoBackupKeep } = data.settings;
   const lastAutoBackup = useRef(data.lastAutoBackup);
   lastAutoBackup.current = data.lastAutoBackup;
-  const { autoLockMinutes, theme, language, font, closeToTray, globalShortcut, browserIntegration, notifications, notifyTrials, notifyCardExpiry, autoRates } = data.settings;
+  const { autoLockMinutes, theme, language, font, closeToTray, globalShortcut, browserIntegration, autoUpdate, notifications, notifyTrials, notifyCardExpiry, autoRates } = data.settings;
   const testAccount = !!data.test;
   setDateFormat(data.settings.dateFormat);
 
   useEffect(
-    () => onPrefsChange({ theme, language, font, closeToTray, globalShortcut, browserIntegration, testAccount }),
-    [theme, language, font, closeToTray, globalShortcut, browserIntegration, testAccount, onPrefsChange],
+    () => onPrefsChange({ theme, language, font, closeToTray, globalShortcut, browserIntegration, autoUpdate, testAccount }),
+    [theme, language, font, closeToTray, globalShortcut, browserIntegration, autoUpdate, testAccount, onPrefsChange],
   );
 
   // Global shortcut and tray menu.

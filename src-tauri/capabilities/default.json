@@ -11,6 +11,8 @@
     "notification:default",
     "dialog:allow-save",
     "dialog:allow-open",
-    "autostart:default"
+    "autostart:default",
+    "updater:default",
+    "process:allow-restart"
   ]
 }

@@ -380,6 +380,14 @@ export const en: Dictionary = {
     usageTip: "Tip: rate how often you use each subscription to see where you could save.",
     vsLast: "Compared with {year}",
   },
+  update: {
+    available: "Keyra {version} is available",
+    checkFailed: "Couldn't check for updates: {error}",
+    failed: "Couldn't install the update: {error}",
+    install: "Update",
+    installing: "Installing Keyra {version}…",
+    upToDate: "Keyra is up to date",
+  },
   tray: {
     lock: "Lock",
     open: "Open Keyra",
@@ -528,6 +536,9 @@ export const en: Dictionary = {
       autotype: "Auto-type",
       autotypeDesc: "Keyra types the username, Tab, the password and Enter into the window you were using. Open quick search with the global shortcut, pick a login and press Ctrl+Enter, or use the keyboard button on a login.",
       autotypeKey: "in quick search",
+      autoUpdate: "Update automatically",
+      autoUpdateDesc: "When a new version is out, Keyra updates itself as it starts. When off, you get a notification and the update installs once you confirm.",
+      checkUpdates: "Check for updates",
       description: "Startup, tray, global shortcut and auto-type.",
       shortcut: "Global shortcut",
       shortcutDesc: "Opens Keyra's quick search from any app.",
@@ -535,6 +546,8 @@ export const en: Dictionary = {
       title: "Desktop",
       tray: "Keep running in the tray",
       trayDesc: "Closing the window hides Keyra to the tray so the browser extension and shortcut keep working. To quit completely, use Quit in the tray icon's menu.",
+      version: "Version",
+      versionDesc: "Keyra {version}",
     },
     general: {
       currency: "Base currency",

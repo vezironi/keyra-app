@@ -379,6 +379,14 @@ export const tr = {
     usageTip: "İpucu: Her aboneliği ne sıklıkla kullandığını işaretle, nerede tasarruf edebileceğini gör.",
     vsLast: "{year} yılına göre",
   },
+  update: {
+    available: "Keyra {version} yayında",
+    checkFailed: "Güncellemeler denetlenemedi: {error}",
+    failed: "Güncelleme kurulamadı: {error}",
+    install: "Güncelle",
+    installing: "Keyra {version} kuruluyor…",
+    upToDate: "Keyra güncel",
+  },
   tray: {
     lock: "Kilitle",
     open: "Keyra'yı aç",
@@ -527,6 +535,9 @@ export const tr = {
       autotype: "Otomatik yazma",
       autotypeDesc: "Keyra kullanıcı adını, Tab'ı, parolayı ve Enter'ı kullandığın pencereye yazar. Genel kısayolla hızlı aramayı aç, bir giriş seç ve Ctrl+Enter'a bas ya da girişteki klavye butonunu kullan.",
       autotypeKey: "hızlı aramada",
+      autoUpdate: "Otomatik güncelle",
+      autoUpdateDesc: "Yeni bir sürüm çıktığında Keyra açılırken kendini günceller. Kapalıysa bir bildirim gösterilir ve güncelleme sen onaylayınca kurulur.",
+      checkUpdates: "Güncellemeleri denetle",
       description: "Başlangıç, sistem tepsisi, genel kısayol ve otomatik yazma.",
       shortcut: "Genel kısayol",
       shortcutDesc: "Keyra'nın hızlı aramasını her uygulamadan açar.",
@@ -534,6 +545,8 @@ export const tr = {
       title: "Masaüstü",
       tray: "Sistem tepsisinde çalışmaya devam et",
       trayDesc: "Pencereyi kapatınca Keyra sistem tepsisine gizlenir, böylece tarayıcı eklentisi ve kısayol çalışmaya devam eder. Tamamen kapatmak için tepsi simgesinin menüsünden Çıkış'ı seç.",
+      version: "Sürüm",
+      versionDesc: "Keyra {version}",
     },
     general: {
       currency: "Ana para birimi",
