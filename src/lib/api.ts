@@ -36,6 +36,9 @@ export interface BrowserClient {
 
 export const BROWSER_PORT = 47390;
 
+/** The published Chrome Web Store listing for the Keyra browser extension. */
+export const CHROME_STORE_URL = "https://chromewebstore.google.com/detail/keyra/gjffghmmielhahajjgildpkpdpeikiha";
+
 export type AutotypeStep = { kind: "text"; value: string } | { kind: "key"; value: "tab" | "enter" };
 
 export const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;

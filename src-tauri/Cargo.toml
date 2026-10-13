@@ -1,6 +1,6 @@
 [package]
 name = "keyra-app"
-version = "0.2.0"
+version = "0.2.1"
 description = "Keyra - password vault and subscription tracker"
 authors = ["you"]
 edition = "2021"

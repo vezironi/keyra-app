@@ -61,6 +61,8 @@ export function Sidebar() {
       <li key={item.page} className="w-full">
         <button
           type="button"
+          // The marketing site's live preview drives these buttons by page name.
+          data-page={item.page}
           onClick={() => navigate(item.page)}
           title={collapsed ? t(item.label) : undefined}
           className={cn(

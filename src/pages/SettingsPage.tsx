@@ -1,16 +1,17 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { save as saveDialog, open as openDialog } from "@tauri-apps/plugin-dialog";
 import { isPermissionGranted, requestPermission } from "@tauri-apps/plugin-notification";
-import { Bell, Check, CircleDot, DatabaseBackup, Download, FileInput, Fingerprint, FolderOpen, Keyboard, KeyRound, Loader2, Monitor, RefreshCw, Save, Palette, Plus, Puzzle, Repeat, ShieldCheck, SlidersHorizontal, Trash2, Upload, UserX, X, type LucideIcon } from "lucide-react";
+import { Bell, Check, CircleDot, DatabaseBackup, Download, ExternalLink, FileInput, Fingerprint, FolderOpen, Keyboard, KeyRound, Loader2, Monitor, RefreshCw, Save, Palette, Plus, Puzzle, Repeat, ShieldCheck, SlidersHorizontal, Trash2, Upload, UserX, X, type LucideIcon } from "lucide-react";
 import type { AppFont, Settings } from "@/lib/types";
 import { useVault } from "@/lib/store";
-import { api, errorMessage, isTauri, BROWSER_PORT, type BrowserClient } from "@/lib/api";
+import { api, errorMessage, isTauri, BROWSER_PORT, CHROME_STORE_URL, type BrowserClient } from "@/lib/api";
 import { migrate } from "@/lib/defaults";
 import { mergeImport, parseExport, type ImportSource, type ParsedImport } from "@/lib/importers";
 import { writeAutoBackup } from "@/lib/backup";
 import { findUpdate, promptUpdate } from "@/lib/updater";
 import { getVersion } from "@tauri-apps/api/app";
 import { fetchRates } from "@/lib/rates";
+import { openExternal } from "@/pages/vault/ItemDetail";
 import { reconcile } from "@/lib/subscriptions";
 import { cn, formatDate, relativeTime, todayKey, type DateFormat } from "@/lib/format";
 import { LANGUAGES, detectLanguage, t, type TKey } from "@/i18n";
@@ -464,11 +465,16 @@ function BrowserSection({ draft: { settings: s }, set }: SectionProps) {
         )}
       </Row>
       <Row label={t("settings.browser.install")} description={t("settings.browser.installDesc")}>
-        <ol className="list-decimal pl-5 flex flex-col gap-1 text-xs font-medium text-fg-2">
-          <li>{t("settings.browser.step1")}</li>
-          <li>{t("settings.browser.step2")}</li>
-          <li>{t("settings.browser.step3")}</li>
-        </ol>
+        <div className="flex flex-col items-start gap-3">
+          <ol className="list-decimal pl-5 flex flex-col gap-1 text-xs font-medium text-fg-2">
+            <li>{t("settings.browser.step1")}</li>
+            <li>{t("settings.browser.step2")}</li>
+            <li>{t("settings.browser.step3")}</li>
+          </ol>
+          <Button size="sm" icon={ExternalLink} onClick={() => openExternal(CHROME_STORE_URL)}>
+            {t("settings.browser.store")}
+          </Button>
+        </div>
       </Row>
     </>
   );
